@@ -16,7 +16,7 @@ const downloadFile = (content: string, fileName: string, mimeType: string) => {
 
 export const exportToShopifyCSV = (content: GeneratedContent, input: ProductInput) => {
   const productForCsv = {
-    "Handle": content.handle,
+    "Handle": content.handle || input.name.toLowerCase().replace(/ /g, '-'),
     "Title": content.title,
     "Body (HTML)": content.description,
     "Vendor": "OmniCopy AI Store",
