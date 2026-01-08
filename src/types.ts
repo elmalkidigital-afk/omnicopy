@@ -1,5 +1,6 @@
-import type { GenerateSeoOptimizedProductContentInput, GeneratedContent as GenkitGeneratedContent } from "@/ai/flows/generate-seo-optimized-product-content";
 import type { FieldValue } from "firebase/firestore";
+import { z } from "zod";
+
 
 export enum ProductTone {
   LUXURY = "Luxe & Élégant",
@@ -13,8 +14,29 @@ export enum Platform {
   WOOCOMMERCE = "woocommerce"
 }
 
-export type ProductInput = GenerateSeoOptimizedProductContentInput;
-export type GeneratedContent = GenkitGeneratedContent;
+export const ProductInputSchema = z.object({
+  name: z.string().min(3, 'Le nom du produit doit contenir au moins 3 caractères.'),
+  features: z.string().min(10, 'Veuillez décrire quelques caractéristiques (au moins 10 caractères).'),
+  category: z.string().nonempty('La catégorie est requise.'),
+  price: z.string().nonempty('Le prix est requis.'),
+  tone: z.nativeEnum(ProductTone),
+  imageUrl: z.string().optional(),
+});
+
+export type ProductInput = z.infer<typeof ProductInputSchema>;
+
+export interface GeneratedContent {
+  title: string;
+  description: string;
+  shortDescription: string;
+  metaDescription: string;
+  tags: string[];
+  slug: string;
+  seoTitle?: string;
+  vendor?: string;
+  option1Name?: string;
+  option1Value?: string;
+}
 
 
 export const tones: { value: ProductTone; label: string }[] = [
