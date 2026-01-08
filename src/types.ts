@@ -1,4 +1,5 @@
 import type { GenerateSeoOptimizedProductContentInput, GeneratedContent as GenkitGeneratedContent } from "@/ai/flows/generate-seo-optimized-product-content";
+import type { FieldValue } from "firebase/firestore";
 
 export enum ProductTone {
   LUXURY = "Luxe & Élégant",
@@ -33,6 +34,15 @@ export const categories = [
     'Maison',
     'Autres'
 ];
+
+export interface ProductDescription extends GeneratedContent {
+  id: string;
+  userId: string;
+  platform: string;
+  createdAt: FieldValue | string;
+  inputData: ProductInput;
+}
+
 
 // Specific interfaces for export formats
 export interface ShopifyProduct {

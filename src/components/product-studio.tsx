@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Wand2, Loader2, Sparkles, Upload } from 'lucide-react';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,11 +27,12 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { categories, tones, type GeneratedContent, type ProductInput, ProductTone } from '@/types';
+import { categories, tones, type GeneratedContent, type ProductInput, ProductTone, ProductDescription } from '@/types';
 import { generateProductContentAction } from '@/app/actions';
 import GeneratedContentDisplay from './generated-content-display';
 import { Skeleton } from './ui/skeleton';
 import Image from 'next/image';
+import { useFirestore, useUser } from '@/firebase';
 
 const formSchema = z.object({
   name: z.string().min(3, 'Le nom du produit doit contenir au moins 3 caractères.'),
@@ -49,6 +51,8 @@ export default function ProductStudio() {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const { toast } = useToast();
+  const { user } = useUser();
+  const firestore = useFirestore();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -76,6 +80,15 @@ export default function ProductStudio() {
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!user) {
+      toast({
+        title: 'Connexion requise',
+        description: 'Vous devez être connecté pour générer du contenu.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsLoading(true);
     setGeneratedContent(null);
     setProductInput(values as ProductInput);
@@ -86,9 +99,30 @@ export default function ProductStudio() {
       setGeneratedContent(result.data);
       toast({
         title: 'Contenu généré avec succès!',
-        description: 'Votre fiche produit est prête.',
+        description: 'Votre fiche produit est prête et sauvegardée.',
         variant: 'default',
       });
+
+      // Save to Firestore
+      try {
+        const productDescriptionData: Omit<ProductDescription, 'id'> = {
+          userId: user.uid,
+          ...result.data,
+          platform: 'shopify', // Default or from form
+          createdAt: serverTimestamp(),
+          inputData: values,
+        };
+        const descriptionsRef = collection(firestore, `users/${user.uid}/productDescriptions`);
+        await addDoc(descriptionsRef, productDescriptionData);
+      } catch (error) {
+        console.error("Error saving to Firestore:", error);
+        toast({
+          title: 'Erreur de sauvegarde',
+          description: "La génération a réussi mais la sauvegarde a échoué.",
+          variant: 'destructive',
+        });
+      }
+
     } else {
       toast({
         title: 'Erreur de génération',
@@ -238,13 +272,14 @@ export default function ProductStudio() {
                   )}
                 />
               
-              <FormField
+               <FormField
                 control={form.control}
                 name="imageUrl"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Image du produit</FormLabel>
                     <div className="flex flex-col gap-4">
+                      <FormControl>
                         <Button
                           type="button"
                           variant="outline"
@@ -254,15 +289,14 @@ export default function ProductStudio() {
                           <Upload className="mr-2 h-4 w-4" />
                           Télécharger une image
                         </Button>
-                        <FormControl>
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            ref={fileInputRef}
-                            onChange={handleImageChange}
-                          />
-                        </FormControl>
+                      </FormControl>
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          ref={fileInputRef}
+                          onChange={handleImageChange}
+                        />
                     </div>
                     {imagePreview && (
                       <div className="mt-4 relative w-full h-48 rounded-md overflow-hidden border">
@@ -275,7 +309,7 @@ export default function ProductStudio() {
               />
 
 
-              <Button type="submit" className="w-full !mt-8" size="lg" disabled={isLoading}>
+              <Button type="submit" className="w-full !mt-8" size="lg" disabled={isLoading || isUserLoading}>
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
