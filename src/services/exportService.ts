@@ -56,6 +56,7 @@ export const exportToWooCommerceCSV = (content: GeneratedContent, input: Product
     "Regular price": input.price,
     "Images": input.imageUrl || '',
     "Meta: _yoast_wpseo_metadesc": content.metaDescription,
+    "Meta: _yoast_wpseo_focuskw": content.title,
   };
 
   const csv = Papa.unparse([productForCsv]);
@@ -75,6 +76,7 @@ export const exportToWooCommerceJSON = (content: GeneratedContent, input: Produc
     tags: content.tags.map(t => ({ name: t })),
     meta_data: [
       { key: "_yoast_wpseo_metadesc", value: content.metaDescription },
+      { key: "_yoast_wpseo_focuskw", value: content.title },
       { key: "_omnicopy_generated", value: "true" }
     ]
   };
