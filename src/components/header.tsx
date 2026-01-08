@@ -10,7 +10,7 @@ import { Logo } from './icons';
 
 const navLinks = [
   { href: '/', label: 'Studio' },
-  { href: '/dashboard', label: 'Dashboard' },
+  { href: '/dashboard', label: 'Tableau de bord' },
   { href: '/pricing', label: 'Tarifs' },
 ];
 
@@ -49,7 +49,7 @@ export default function Header() {
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
                 <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle Menu</span>
+                <span className="sr-only">Ouvrir le menu</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="left">

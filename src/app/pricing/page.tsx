@@ -4,26 +4,26 @@ import { Check } from "lucide-react";
 
 const plans = [
     {
-        name: "Starter",
+        name: "Débutant",
         price: "19€",
         credits: "50",
-        target: "Débutants (1-2 produits/jour)",
+        target: "Pour commencer (1-2 produits/jour)",
         features: ["Génération SEO", "Exports CSV/JSON", "Tous les tons", "Support Email"],
         primary: false,
     },
     {
-        name: "Pro Shop",
+        name: "Pro",
         price: "49€",
         credits: "500",
-        target: "Boutiques actives & Dropshippers",
+        target: "Boutiques actives & Agences",
         features: ["Génération SEO", "Exports CSV/JSON", "Tous les tons", "Support Prioritaire", "Accès API (bientôt)"],
         primary: true,
     },
     {
-        name: "Agency",
+        name: "Entreprise",
         price: "299€",
         credits: "5000",
-        target: "Agences e-commerce",
+        target: "Grandes équipes & Entreprises",
         features: ["Génération SEO", "Exports CSV/JSON", "Tous les tons", "Support Dédié", "Accès API (bientôt)", "Marque Blanche (bientôt)"],
         primary: false,
     }

@@ -8,13 +8,9 @@
  */
 
 import {ai} from '@/ai/genkit';
+import { ProductTone, Platform } from '@/lib/types';
 import {z} from 'genkit';
 
-export const ProductTone = z.enum(['LUXURY', 'TECHNICAL', 'FRIENDLY', 'MARKETING']);
-export type ProductTone = z.infer<typeof ProductTone>;
-
-export const Platform = z.enum(['SHOPIFY', 'WOOCOMMERCE']);
-export type Platform = z.infer<typeof Platform>;
 
 const GenerateSeoOptimizedProductContentInputSchema = z.object({
   name: z.string().describe('The name of the product.'),
@@ -41,10 +37,6 @@ export type GeneratedContent = z.infer<typeof GeneratedContentSchema>;
 const GenerateSeoOptimizedProductContentOutputSchema = GeneratedContentSchema;
 
 export type GenerateSeoOptimizedProductContentOutput = z.infer<typeof GenerateSeoOptimizedProductContentOutputSchema>;
-
-export async function generateSeoOptimizedProductContent(input: GenerateSeoOptimizedProductContentInput): Promise<GenerateSeoOptimizedProductContentOutput> {
-  return generateSeoOptimizedProductContentFlow(input);
-}
 
 const prompt = ai.definePrompt({
   name: 'generateSeoOptimizedProductContentPrompt',
@@ -81,3 +73,8 @@ const generateSeoOptimizedProductContentFlow = ai.defineFlow(
     return output!;
   }
 );
+
+
+export async function generateSeoOptimizedProductContent(input: GenerateSeoOptimizedProductContentInput): Promise<GenerateSeoOptimizedProductContentOutput> {
+  return generateSeoOptimizedProductContentFlow(input);
+}
