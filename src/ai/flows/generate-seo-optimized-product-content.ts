@@ -87,11 +87,11 @@ const prompt = ai.definePrompt({
         -   **Média** : Si une image est fournie, insère une balise \`<img src="{{{imageUrl}}}" alt="Image de {{{name}}}" style="width:100%; height:auto; border-radius:8px; margin:16px 0;">\` dans le contenu.
     
     5.  **Champs Shopify/E-commerce** :
-        -   **\`title\`** : Titre principal du produit, engageant pour le client.
-        -   **\`shortDescription\`** : Résumé percutant de 2 phrases.
-        -   **\`tags\`** : 3 à 5 tags pertinents.
-        -   **\`vendor\`** : Nom de la marque ou du fabricant.
-        -   **\`option1Name\` / \`option1Value\`** : Si pas de variante, utilise "Title" et "Default Title".
+        -   \`title\` : Titre principal du produit, engageant pour le client.
+        -   \`shortDescription\` : Résumé percutant de 2 phrases.
+        -   \`tags\` : 3 à 5 tags pertinents.
+        -   \`vendor\` : Nom de la marque ou du fabricant.
+        -   \`option1Name\` / \`option1Value\` : Si pas de variante, utilise "Title" et "Default Title".
 
     Remplis TOUS les champs du JSON demandé.
   `,
