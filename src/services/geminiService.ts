@@ -9,8 +9,8 @@ if (!process.env.GEMINI_API_KEY) {
 }
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-// Utilisation de Flash pour la vitesse ou Pro pour la qualité, ici Pro pour le SEO complexe
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
+// Utilisation de Flash pour la vitesse, qui est plus fiable et rapide.
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
 export const generateProductContent = async (input: ProductInput): Promise<GeneratedContent> => {
   
