@@ -29,12 +29,12 @@ export const exportToShopifyCSV = (content: GeneratedContent, input: ProductInpu
     "Handle": createSlugFromTitle(content.title),
     "Title": content.title,
     "Body (HTML)": content.description,
-    "Vendor": "OmniCopy AI Store", // Using a default value as it's not in the simplified content
+    "Vendor": "OmniCopy AI Store",
     "Type": input.category,
     "Tags": content.tags.join(', '),
     "Published": "true",
-    "Option1 Name": "Title",
-    "Option1 Value": "Default Title",
+    "Option1 Name": content.option1Name,
+    "Option1 Value": content.option1Value,
     "Variant SKU": "",
     "Variant Grams": "0",
     "Variant Inventory Tracker": "shopify",
@@ -46,7 +46,7 @@ export const exportToShopifyCSV = (content: GeneratedContent, input: ProductInpu
     "Variant Taxable": "true",
     "Image Src": input.imageUrl || '',
     "Image Position": "1",
-    "SEO Title": content.title, // Using title as SEO Title
+    "SEO Title": content.seoTitle,
     "SEO Description": content.metaDescription,
   };
   
