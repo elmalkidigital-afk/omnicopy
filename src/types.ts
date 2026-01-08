@@ -27,15 +27,11 @@ export type ProductInput = z.infer<typeof ProductInputSchema>;
 
 export interface GeneratedContent {
   title: string;
-  description: string;
+  slug: string; // Généré par l'IA pour coller parfaitement au titre
+  description: string; // Format HTML (<h2>, <ul>, <strong>)
   shortDescription: string;
   metaDescription: string;
   tags: string[];
-  slug: string;
-  seoTitle?: string;
-  vendor?: string;
-  option1Name?: string;
-  option1Value?: string;
 }
 
 
