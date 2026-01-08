@@ -8,7 +8,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import { ProductTone, Platform } from '@/lib/types';
+import { ProductTone } from '@/lib/types';
 import {z} from 'genkit';
 
 
@@ -18,7 +18,7 @@ const GenerateSeoOptimizedProductContentInputSchema = z.object({
   category: z.string().describe('The category of the product.'),
   price: z.string().describe('The price of the product.'),
   tone: ProductTone.describe('The tone of the product description (LUXURY, TECHNICAL, FRIENDLY, MARKETING).'),
-  imageUrl: z.string().optional().describe('The URL of the product image.'),
+  imageUrl: z.string().optional().describe("A data URI of the product image. Expected format: 'data:<mimetype>;base64,<encoded_data>'."),
 });
 
 export type GenerateSeoOptimizedProductContentInput = z.infer<typeof GenerateSeoOptimizedProductContentInputSchema>;
@@ -50,6 +50,9 @@ const prompt = ai.definePrompt({
   - Catégorie: {{{category}}}
   - Prix: {{{price}}}
   - Ton: {{{tone}}}
+  {{#if imageUrl}}
+  - Image: {{media url=imageUrl}}
+  {{/if}}
 
   Générez le contenu marketing en français, au format JSON strict (pas de markdown) avec cette structure:
   {

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Wand2, Loader2, Sparkles } from 'lucide-react';
+import { Wand2, Loader2, Sparkles, Upload } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,7 +30,7 @@ import { categories, tones, type GeneratedContent, type ProductInput, type Produ
 import { generateProductContentAction } from '@/app/actions';
 import GeneratedContentDisplay from './generated-content-display';
 import { Skeleton } from './ui/skeleton';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import Image from 'next/image';
 
 const formSchema = z.object({
   name: z.string().min(3, 'Le nom du produit doit contenir au moins 3 caractères.'),
@@ -45,6 +45,8 @@ export default function ProductStudio() {
   const [isLoading, setIsLoading] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null);
   const [productInput, setProductInput] = useState<ProductInput | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const { toast } = useToast();
 
@@ -56,9 +58,22 @@ export default function ProductStudio() {
       category: 'Tech',
       price: '',
       tone: 'FRIENDLY',
-      imageUrl: PlaceHolderImages[0]?.imageUrl,
+      imageUrl: '',
     },
   });
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const dataUrl = reader.result as string;
+        setImagePreview(dataUrl);
+        form.setValue('imageUrl', dataUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -229,22 +244,35 @@ export default function ProductStudio() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Image du produit</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Choisir une image d'exemple" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {PlaceHolderImages.map((img) => (
-                          <SelectItem key={img.id} value={img.imageUrl}>{img.description}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <>
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          ref={fileInputRef}
+                          onChange={handleImageChange}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <Upload className="mr-2 h-4 w-4" />
+                          Télécharger une image
+                        </Button>
+                      </>
+                    </FormControl>
+                    {imagePreview && (
+                      <div className="mt-4 relative w-full h-48 rounded-md overflow-hidden border">
+                         <Image src={imagePreview} alt="Aperçu du produit" fill style={{objectFit: 'cover'}} />
+                      </div>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
 
               <Button type="submit" className="w-full !mt-8" size="lg" disabled={isLoading}>
                 {isLoading ? (
