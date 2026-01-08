@@ -62,5 +62,5 @@ export const exportToWooCommerceJSON = (content: GeneratedContent, input: Produc
   }];
 
   const dataStr = JSON.stringify(wooData, null, 2);
-  downloadFile(dataStr, "woo_import.json", "data:text/json;charset=utf-8,");
+  downloadFile(dataStr, 'woo_import.json', 'application/json');
 };
