@@ -1,10 +1,10 @@
 'use client';
 
-import { CheckCircle, FileJson, FileSpreadsheet, Copy } from 'lucide-react';
+import { CheckCircle, FileJson, FileSpreadsheet, Copy, DownloadCloud } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
-import { exportToShopifyCSV, exportToWooCommerceCSV } from '@/services/exportService';
+import { exportToShopifyCSV, exportToWooCommerceCSV, exportToWooCommerceJSON } from '@/services/exportService';
 import type { GeneratedContent, ProductInput } from '@/types';
 import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
@@ -79,8 +79,8 @@ export default function GeneratedContentDisplay({ content, input }: GeneratedCon
         </div>
       </CardContent>
       <CardFooter className="flex-col items-stretch gap-4">
-        <p className="text-sm font-medium text-center text-muted-foreground">Télécharger pour :</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <p className="text-sm font-medium text-center text-muted-foreground">Exporter pour :</p>
+        <div className="flex flex-col gap-3">
           <Button 
             onClick={() => exportToShopifyCSV(content, input)}
             className="bg-green-600 hover:bg-green-700 text-white py-6"
@@ -94,6 +94,14 @@ export default function GeneratedContentDisplay({ content, input }: GeneratedCon
             >
             <FileSpreadsheet className="mr-2 h-5 w-5" />
             WooCommerce (CSV)
+          </Button>
+           <Button 
+            onClick={() => exportToWooCommerceJSON(content, input)}
+            variant="outline"
+            className="border-purple-600 text-purple-600 hover:bg-purple-50 hover:text-purple-700 py-6"
+            >
+            <DownloadCloud className="mr-2 h-5 w-5" />
+            WooCommerce (API/JSON)
           </Button>
         </div>
       </CardFooter>

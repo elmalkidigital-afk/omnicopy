@@ -1,6 +1,6 @@
 'use client';
 
-import type { GeneratedContent, ProductInput } from '../types';
+import type { GeneratedContent, ProductInput, WooProduct } from '../types';
 import Papa from 'papaparse';
 
 const downloadFile = (content: string, fileName: string, mimeType: string) => {
@@ -60,4 +60,25 @@ export const exportToWooCommerceCSV = (content: GeneratedContent, input: Product
 
   const csv = Papa.unparse([productForCsv]);
   downloadFile(csv, 'woocommerce_import.csv', 'text/csv;charset=utf-8;');
+};
+
+
+export const exportToWooCommerceJSON = (content: GeneratedContent, input: ProductInput) => {
+  const product: WooProduct = {
+    name: content.title,
+    type: "simple",
+    regular_price: input.price,
+    description: content.description,
+    short_description: content.shortDescription,
+    categories: [{ name: input.category }],
+    images: input.imageUrl ? [{ src: input.imageUrl }] : [],
+    tags: content.tags.map(t => ({ name: t })),
+    meta_data: [
+      { key: "_yoast_wpseo_metadesc", value: content.metaDescription },
+      { key: "_omnicopy_generated", value: "true" }
+    ]
+  };
+
+  const jsonContent = JSON.stringify([product], null, 2);
+  downloadFile(jsonContent, 'woocommerce_export.json', 'application/json');
 };
