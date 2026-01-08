@@ -42,23 +42,23 @@ const prompt = ai.definePrompt({
   name: 'generateSeoOptimizedProductContentPrompt',
   input: {schema: GenerateSeoOptimizedProductContentInputSchema},
   output: {schema: GenerateSeoOptimizedProductContentOutputSchema},
-  prompt: `Act as an expert e-commerce copywriter for the {{{tone}}} platform.
+  prompt: `Agissez en tant qu'expert rédacteur e-commerce pour la plateforme {{{tone}}}.
 
-  Product details:
-  - Name: {{{name}}}
-  - Features: {{{features}}}
-  - Category: {{{category}}}
-  - Price: {{{price}}}
-  - Tone: {{{tone}}}
+  Détails du produit:
+  - Nom: {{{name}}}
+  - Caractéristiques: {{{features}}}
+  - Catégorie: {{{category}}}
+  - Prix: {{{price}}}
+  - Ton: {{{tone}}}
 
-  Generate marketing content in strict JSON format (no markdown) with this structure:
+  Générez le contenu marketing en français, au format JSON strict (pas de markdown) avec cette structure:
   {
-    "title": "SEO-optimized title (max 60 chars)",
-    "description": "Complete HTML description (<p>, <ul>, <strong>)",
-    "shortDescription": "Concise summary (2 sentences)",
-    "metaDescription": "SEO meta description (max 160 chars)",
+    "title": "Titre optimisé SEO (max 60 caractères)",
+    "description": "Description HTML complète (<p>, <ul>, <strong>)",
+    "shortDescription": "Résumé concis (2 phrases)",
+    "metaDescription": "Méta-description SEO (max 160 caractères)",
     "tags": ["tag1", "tag2", "tag3"],
-    "handle": "product-slug-for-url"
+    "handle": "slug-produit-pour-url"
   }`,
 });
 
