@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { categories, tones, type GeneratedContent, type ProductInput, type ProductTone } from '@/lib/types';
+import { categories, tones, type GeneratedContent, type ProductInput, type ProductTone } from '@/types';
 import { generateProductContentAction } from '@/app/actions';
 import GeneratedContentDisplay from './generated-content-display';
 import { Skeleton } from './ui/skeleton';

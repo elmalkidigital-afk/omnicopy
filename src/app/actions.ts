@@ -1,7 +1,7 @@
 'use server';
 
 import { generateSeoOptimizedProductContent } from '@/ai/flows/generate-seo-optimized-product-content';
-import type { ProductInput } from '@/lib/types';
+import type { ProductInput } from '@/types';
 
 export async function generateProductContentAction(input: ProductInput) {
   try {

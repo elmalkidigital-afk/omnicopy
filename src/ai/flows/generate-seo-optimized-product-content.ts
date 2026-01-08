@@ -8,7 +8,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import { ProductTone } from '@/lib/types';
+import { ProductTone } from '@/types';
 import {z} from 'genkit';
 
 
