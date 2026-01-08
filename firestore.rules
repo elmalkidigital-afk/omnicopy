@@ -1,138 +1,60 @@
 /**
- * Core Philosophy: This ruleset enforces a strict user-ownership model. All user-generated content,
- * including product descriptions and credit transactions, is stored in subcollections under a user's
- * primary document. This ensures that users can only ever access data that belongs to them.
- *
- * Data Structure: The data is organized hierarchically under the `/users/{userId}` path. This
- * path-based security model is the cornerstone of the authorization logic, making it simple,
- * performant, and secure.
- *
- * Key Security Decisions:
- * - User Enumeration is Disabled: Listing the top-level `/users` collection is explicitly forbidden
- *   to protect user privacy and prevent data scraping.
- * - Strict Path-Based Ownership: All rules for subcollections rely on the `{userId}` wildcard from the
- *   path to grant access, ensuring a user can only operate within their own data tree.
- * - Default Deny: All operations are denied by default. Access is only granted through explicit
- *   `allow` statements.
- *
- * Denormalization for Authorization: The ruleset requires that any document created within a user's
- * data tree (e.g., a new product description) must contain a `userId` field that matches the
- * `{userId}` from the path. This denormalized field creates a verifiable link of ownership within the
- * document itself, which is enforced as immutable upon update.
- *
- * Structural Segregation: The entire data model is segregated by user at the top level, which is the
- * most secure and performant way to manage private user data and enable secure `list` operations
- * within a user's own collections.
+ * This ruleset enforces a strict user-ownership model.
+ * - All user-generated content is stored in subcollections under `/users/{userId}`.
+ * - This path-based security ensures users can only access their own data.
+ * - Listing the top-level `/users` collection is forbidden to protect privacy.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ------------------------------------------------------------------------
     // Helper Functions
-    // ------------------------------------------------------------------------
-
-    /**
-     * Checks if the user is authenticated.
-     */
     function isSignedIn() {
       return request.auth != null;
     }
 
-    /**
-     * Checks if the authenticated user's UID matches the provided userId.
-     * This is the primary function for enforcing document ownership.
-     */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    /**
-     * Validates ownership of an existing document for update or delete operations.
-     * Ensures the request is from the owner and the document actually exists.
-     */
-    function isOwnerOfExistingDoc(userId) {
-      return isOwner(userId) && resource != null;
-    }
-
-    /**
-     * Validates that the user is creating their own user document and that the
-     * document's internal 'id' field correctly matches their UID.
-     */
+    // A user can create their own document, and the doc ID must match their UID.
+    // The `id` field inside the document must also match their UID.
     function isCreatingOwnUserDoc(userId) {
       return isOwner(userId) && request.resource.data.id == userId;
     }
 
-    /**
-     * Validates that a user is creating a subcollection document under their own
-     * user path and that the document's internal 'userId' field correctly
-     * references their UID.
-     */
+    // When creating a subcollection document, the `userId` field must match the
+    // authenticated user's UID.
     function isCreatingOwnedSubDoc(userId) {
       return isOwner(userId) && request.resource.data.userId == userId;
     }
 
-    /**
-     * Validates that the critical ownership link ('userId' field) on a
-     * subcollection document is not being changed during an update.
-     */
+    // The `userId` field linking a subcollection document to its owner is immutable.
     function isUserIdImmutable() {
       return request.resource.data.userId == resource.data.userId;
     }
 
-    // ------------------------------------------------------------------------
-    // Collection Rules
-    // ------------------------------------------------------------------------
-
-    /**
-     * @description Manages user profile documents.
-     * @path /users/{userId}
-     * @allow (get) A signed-in user reads their own document at `/users/USER_123`.
-     * @allow (create) A new user with UID `USER_123` creates their own profile document.
-     * @deny (list) An authenticated user attempts to list all documents in the `/users` collection.
-     * @deny (get) User `USER_ABC` attempts to read `/users/USER_123`.
-     * @principle Restricts access to a user's own data tree and prevents user enumeration.
-     */
+    // Rules for the 'users' collection
     match /users/{userId} {
-      allow get: if isOwner(userId);
-      allow list: if false;
+      // A user can only get, update, or delete their own document.
+      allow get, update, delete: if isOwner(userId);
+      
+      // A user can create their own document.
       allow create: if isCreatingOwnUserDoc(userId);
-      allow update: if isOwnerOfExistingDoc(userId);
-      allow delete: if isOwnerOfExistingDoc(userId);
-    }
+      
+      // Listing all user documents is forbidden.
+      allow list: if false;
 
-    /**
-     * @description Manages product descriptions generated by a specific user.
-     * @path /users/{userId}/productDescriptions/{productDescriptionId}
-     * @allow (create) User `USER_123` creates a new description in their own subcollection.
-     * @allow (list) User `USER_123` lists all descriptions in their `/productDescriptions` subcollection.
-     * @deny (create) User `USER_ABC` attempts to create a description under `/users/USER_123/...`.
-     * @deny (update) User `USER_123` attempts to change the `userId` field on an existing description.
-     * @principle Enforces document ownership and relational integrity for subcollection items.
-     */
-    match /users/{userId}/productDescriptions/{productDescriptionId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isCreatingOwnedSubDoc(userId);
-      allow update: if isOwnerOfExistingDoc(userId) && isUserIdImmutable();
-      allow delete: if isOwnerOfExistingDoc(userId);
-    }
-
-    /**
-     * @description Manages credit transactions for a specific user.
-     * @path /users/{userId}/creditTransactions/{creditTransactionId}
-     * @allow (create) User `USER_123` creates a new transaction in their own subcollection.
-     * @allow (list) User `USER_123` lists all transactions in their `/creditTransactions` subcollection.
-     * @deny (get) User `USER_ABC` attempts to read a transaction from `/users/USER_123/...`.
-     * @deny (delete) User `USER_ABC` attempts to delete a transaction from `/users/USER_123/...`.
-     * @principle Enforces document ownership and relational integrity for subcollection items.
-     */
-    match /users/{userId}/creditTransactions/{creditTransactionId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isCreatingOwnedSubDoc(userId);
-      allow update: if isOwnerOfExistingDoc(userId) && isUserIdImmutable();
-      allow delete: if isOwnerOfExistingDoc(userId);
+      // Rules for the 'productDescriptions' subcollection
+      match /productDescriptions/{descriptionId} {
+        // A user can CRUD and list their own product descriptions.
+        allow list, get: if isOwner(userId);
+        allow create: if isCreatingOwnedSubDoc(userId);
+        allow update: if isOwner(userId) && isUserIdImmutable();
+        allow delete: if isOwner(userId);
+      }
     }
   }
 }
+
+    

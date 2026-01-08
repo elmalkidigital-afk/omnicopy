@@ -1,28 +1,30 @@
 {
   "entities": {
     "User": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "User",
       "type": "object",
       "description": "Represents a user of the OmniCopy AI platform.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the user.",
-          "format": "uuid"
+          "description": "Unique identifier for the user (matches Firebase Auth UID)."
         },
         "email": {
           "type": "string",
           "description": "Email address of the user.",
           "format": "email"
         },
+        "displayName": {
+            "type": "string",
+            "description": "The user's display name."
+        },
+        "photoURL": {
+            "type": "string",
+            "description": "URL of the user's profile picture."
+        },
         "creditBalance": {
           "type": "number",
           "description": "The number of credits the user has available."
-        },
-        "stripeCustomerId": {
-          "type": "string",
-          "description": "The user's Stripe customer ID for managing subscriptions and payments."
         },
         "createdAt": {
           "type": "string",
@@ -33,25 +35,21 @@
       "required": [
         "id",
         "email",
-        "creditBalance",
-        "stripeCustomerId",
         "createdAt"
       ]
     },
     "ProductDescription": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "ProductDescription",
       "type": "object",
       "description": "Represents a generated product description.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the product description.",
-          "format": "uuid"
+          "description": "Unique identifier for the product description."
         },
         "userId": {
           "type": "string",
-          "description": "Reference to the User who generated this product description. (Relationship: User 1:N ProductDescription)"
+          "description": "Reference to the User who generated this product description."
         },
         "title": {
           "type": "string",
@@ -86,12 +84,11 @@
           "format": "date-time"
         },
         "inputData": {
-          "type": "string",
-          "description": "Json string that contains the product data input used to generate this description"
+            "type": "object",
+            "description": "JSON object containing the product data input used to generate this description"
         }
       },
       "required": [
-        "id",
         "userId",
         "title",
         "description",
@@ -101,47 +98,6 @@
         "platform",
         "createdAt",
         "inputData"
-      ]
-    },
-    "CreditTransaction": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "CreditTransaction",
-      "type": "object",
-      "description": "Represents a transaction of credits for a user.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the credit transaction.",
-          "format": "uuid"
-        },
-        "userId": {
-          "type": "string",
-          "description": "Reference to the User who owns the credits. (Relationship: User 1:N CreditTransaction)"
-        },
-        "amount": {
-          "type": "number",
-          "description": "The amount of credits added or removed (negative for removal)."
-        },
-        "transactionType": {
-          "type": "string",
-          "description": "The type of transaction (e.g., purchase, generation)."
-        },
-        "transactionDate": {
-          "type": "string",
-          "description": "Timestamp indicating when the transaction occurred.",
-          "format": "date-time"
-        },
-        "descriptionId": {
-          "type": "string",
-          "description": "Reference to the ProductDescription for which credits were spent. (Optional, only if applicable)."
-        }
-      },
-      "required": [
-        "id",
-        "userId",
-        "amount",
-        "transactionType",
-        "transactionDate"
       ]
     }
   },
@@ -160,13 +116,7 @@
           "schema": {
             "$ref": "#/backend/entities/User"
           },
-          "description": "Stores user profiles. Only the authenticated user can access their own profile.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user. This enforces path-based ownership."
-            }
-          ]
+          "description": "Stores user profiles. Only the authenticated user can access their own profile."
         }
       },
       {
@@ -176,40 +126,10 @@
           "schema": {
             "$ref": "#/backend/entities/ProductDescription"
           },
-          "description": "Stores product descriptions generated by the user.  Only the authenticated user can access their product descriptions. This enforces path-based ownership.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user (owner)."
-            },
-            {
-              "name": "productDescriptionId",
-              "description": "The unique identifier of the product description."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/users/{userId}/creditTransactions/{creditTransactionId}",
-        "definition": {
-          "entityName": "CreditTransaction",
-          "schema": {
-            "$ref": "#/backend/entities/CreditTransaction"
-          },
-          "description": "Stores credit transactions for each user. Only the authenticated user can access their credit transactions.  This enforces path-based ownership.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user (owner)."
-            },
-            {
-              "name": "creditTransactionId",
-              "description": "The unique identifier of the credit transaction."
-            }
-          ]
+          "description": "Stores product descriptions generated by the user. Only the owner can access them."
         }
       }
-    ],
-    "reasoning": "The Firestore structure is designed to ensure Authorization Independence and support the required QAPs. It leverages path-based ownership for user-specific data and denormalization to avoid `get()` calls in security rules.\n\n*   **Users Collection:** Stores user profiles. Access is restricted to the authenticated user (path-based ownership).\n*   **Product Descriptions:** Stored under each user's document, ensuring only the owner can `list`, `create`, `read`, `update`, and `delete` their product descriptions (path-based ownership).\n*   **Credit Transactions:** Stored under each user's document, ensuring only the owner can `list`, `create`, `read`, `update`, and `delete` their credit transactions (path-based ownership).\n\nThis structure avoids the need for complex `get()` calls in security rules, simplifying the rule logic and improving security and performance. It facilitates secure `list` operations because each collection contains documents with a homogeneous security posture (owned by the user identified in the path)."
+    ]
   }
 }
+    
