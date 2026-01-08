@@ -97,6 +97,9 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
         case 'auth/popup-closed-by-user':
             description = "La fenêtre de connexion a été fermée.";
             break;
+        case 'auth/internal-error':
+            description = "Une erreur interne s'est produite. Veuillez vérifier la configuration de l'authentification Google dans votre projet Firebase.";
+            break;
         default:
             description = "Une erreur technique est survenue. Veuillez réessayer.";
             console.error("Auth Error:", error.code, error.message);
