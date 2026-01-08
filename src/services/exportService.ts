@@ -14,9 +14,19 @@ const downloadFile = (content: string, fileName: string, mimeType: string) => {
   URL.revokeObjectURL(link.href);
 };
 
+const createSlugFromTitle = (title: string): string => {
+  if (!title) return '';
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '') // remove non-word [a-z0-9_], non-whitespace, non-hyphen chars
+    .replace(/[\s_-]+/g, '-') // swap any length of whitespace, underscore, hyphen characters with a single -
+    .replace(/^-+|-+$/g, ''); // remove leading, trailing -
+};
+
 export const exportToShopifyCSV = (content: GeneratedContent, input: ProductInput) => {
   const productForCsv = {
-    "Handle": content.handle || input.name.toLowerCase().replace(/ /g, '-'),
+    "Handle": content.handle || createSlugFromTitle(content.title),
     "Title": content.title,
     "Body (HTML)": content.description,
     "Vendor": content.vendor,
@@ -65,21 +75,24 @@ export const exportToWooCommerceCSV = (content: GeneratedContent, input: Product
 
 
 export const exportToWooCommerceJSON = (content: GeneratedContent, input: ProductInput) => {
-  const product: WooProduct = {
-    name: content.title,
-    type: "simple",
-    regular_price: input.price,
-    description: content.description,
-    short_description: content.shortDescription,
-    categories: [{ name: input.category }],
-    images: input.imageUrl ? [{ src: input.imageUrl }] : [],
-    tags: content.tags.map(t => ({ name: t })),
-    meta_data: [
-      { key: "_yoast_wpseo_metadesc", value: content.metaDescription },
-      { key: "_yoast_wpseo_focuskw", value: content.title },
-      { key: "_omnicopy_generated", value: "true" }
-    ]
-  };
+    const productSlug = createSlugFromTitle(content.title);
+
+    const product: WooProduct = {
+        name: content.title,
+        slug: productSlug,
+        type: "simple",
+        regular_price: input.price,
+        description: content.description,
+        short_description: content.shortDescription,
+        categories: [{ name: input.category }],
+        images: input.imageUrl ? [{ src: input.imageUrl }] : [],
+        tags: content.tags.map(t => ({ name: t })),
+        meta_data: [
+        { key: "_yoast_wpseo_metadesc", value: content.metaDescription },
+        { key: "_yoast_wpseo_focuskw", value: content.title },
+        { key: "_omnicopy_generated", value: "true" }
+        ]
+    };
 
   const jsonContent = JSON.stringify([product], null, 2);
   downloadFile(jsonContent, 'woocommerce_export.json', 'application/json');

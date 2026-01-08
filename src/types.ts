@@ -72,6 +72,7 @@ export interface ShopifyProduct {
 
 export interface WooProduct {
   name: string;
+  slug?: string;
   type: "simple" | "variable";
   regular_price: string;
   description: string;
