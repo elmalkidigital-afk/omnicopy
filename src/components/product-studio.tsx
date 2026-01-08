@@ -51,7 +51,7 @@ export default function ProductStudio() {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const { toast } = useToast();
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
 
   const form = useForm<z.infer<typeof formSchema>>({
