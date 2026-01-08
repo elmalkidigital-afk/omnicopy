@@ -81,7 +81,7 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
 
   const handleAuthError = (error: any) => {
     let description = 'Une erreur inconnue est survenue.';
-    if (error.code) {
+    if (error && error.code) {
       switch (error.code) {
         case 'auth/user-not-found':
         case 'auth/wrong-password':
@@ -102,8 +102,10 @@ export default function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
             break;
         default:
             description = "Une erreur technique est survenue. Veuillez réessayer.";
-            console.error("Auth Error:", error.code, error.message);
+            console.error("Auth Error:", error.code, error.message || 'No message');
       }
+    } else {
+      console.error("Auth Error:", error);
     }
     toast({
       variant: 'destructive',
