@@ -8,7 +8,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import { ProductTone } from '@/types';
+import { ProductTone, tones } from '@/types';
 import {z} from 'genkit';
 
 
@@ -17,7 +17,7 @@ const GenerateSeoOptimizedProductContentInputSchema = z.object({
   features: z.string().describe('The features of the product.'),
   category: z.string().describe('The category of the product.'),
   price: z.string().describe('The price of the product.'),
-  tone: ProductTone.describe('The tone of the product description (LUXURY, TECHNICAL, FRIENDLY, MARKETING).'),
+  tone: z.nativeEnum(ProductTone).describe('The tone of the product description (LUXURY, TECHNICAL, FRIENDLY, MARKETING).'),
   imageUrl: z.string().optional().describe("A data URI of the product image. Expected format: 'data:<mimetype>;base64,<encoded_data>'."),
 });
 
@@ -42,27 +42,20 @@ const prompt = ai.definePrompt({
   name: 'generateSeoOptimizedProductContentPrompt',
   input: {schema: GenerateSeoOptimizedProductContentInputSchema},
   output: {schema: GenerateSeoOptimizedProductContentOutputSchema},
-  prompt: `Agissez en tant qu'expert rédacteur e-commerce pour la plateforme {{{tone}}}.
+  prompt: `Agissez en tant qu'expert rédacteur e-commerce.
 
   Détails du produit:
   - Nom: {{{name}}}
   - Caractéristiques: {{{features}}}
   - Catégorie: {{{category}}}
   - Prix: {{{price}}}
-  - Ton: {{{tone}}}
+  - Ton demandé: {{{tone}}}
   {{#if imageUrl}}
   - Image: {{media url=imageUrl}}
   {{/if}}
 
-  Générez le contenu marketing en français, au format JSON strict (pas de markdown) avec cette structure:
-  {
-    "title": "Titre optimisé SEO (max 60 caractères)",
-    "description": "Description HTML complète (<p>, <ul>, <strong>)",
-    "shortDescription": "Résumé concis (2 phrases)",
-    "metaDescription": "Méta-description SEO (max 160 caractères)",
-    "tags": ["tag1", "tag2", "tag3"],
-    "handle": "slug-produit-pour-url"
-  }`,
+  Générez le contenu marketing en français, au format JSON strict (pas de markdown) en suivant cette structure.
+  `,
 });
 
 const generateSeoOptimizedProductContentFlow = ai.defineFlow(

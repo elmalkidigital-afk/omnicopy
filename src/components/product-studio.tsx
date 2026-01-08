@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { categories, tones, type GeneratedContent, type ProductInput, type ProductTone } from '@/types';
+import { categories, tones, type GeneratedContent, type ProductInput, ProductTone } from '@/types';
 import { generateProductContentAction } from '@/app/actions';
 import GeneratedContentDisplay from './generated-content-display';
 import { Skeleton } from './ui/skeleton';
@@ -37,7 +37,7 @@ const formSchema = z.object({
   features: z.string().min(10, 'Veuillez décrire quelques caractéristiques (au moins 10 caractères).'),
   category: z.string().nonempty('La catégorie est requise.'),
   price: z.string().nonempty('Le prix est requis.'),
-  tone: z.enum(['LUXURY', 'TECHNICAL', 'FRIENDLY', 'MARKETING']),
+  tone: z.nativeEnum(ProductTone),
   imageUrl: z.string().optional(),
 });
 
@@ -57,7 +57,7 @@ export default function ProductStudio() {
       features: '',
       category: 'Tech',
       price: '',
-      tone: 'FRIENDLY',
+      tone: ProductTone.FRIENDLY,
       imageUrl: '',
     },
   });
@@ -244,23 +244,26 @@ export default function ProductStudio() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Image du produit</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        ref={fileInputRef}
-                        onChange={handleImageChange}
-                      />
-                    </FormControl>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      <Upload className="mr-2 h-4 w-4" />
-                      Télécharger une image
-                    </Button>
+                    <div className="flex flex-col gap-4">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className='w-fit'
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <Upload className="mr-2 h-4 w-4" />
+                          Télécharger une image
+                        </Button>
+                        <FormControl>
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            ref={fileInputRef}
+                            onChange={handleImageChange}
+                          />
+                        </FormControl>
+                    </div>
                     {imagePreview && (
                       <div className="mt-4 relative w-full h-48 rounded-md overflow-hidden border">
                          <Image src={imagePreview} alt="Aperçu du produit" fill style={{objectFit: 'cover'}} />
