@@ -1,6 +1,7 @@
 'use client';
 
 import type { GeneratedContent, ProductInput } from '../types';
+import Papa from 'papaparse';
 
 const downloadFile = (content: string, fileName: string, mimeType: string) => {
   const blob = new Blob([content], { type: mimeType });
@@ -13,18 +14,8 @@ const downloadFile = (content: string, fileName: string, mimeType: string) => {
   URL.revokeObjectURL(link.href);
 };
 
-const escapeCsvField = (field: string | undefined | null): string => {
-  if (field === undefined || field === null) return '';
-  const str = String(field);
-  if (str.includes(',') || str.includes('\n') || str.includes('"')) {
-    return `"${str.replace(/"/g, '""')}"`;
-  }
-  return str;
-};
-
-
 export const exportToShopifyCSV = (content: GeneratedContent, input: ProductInput) => {
-  const product = {
+  const productForCsv = {
     "Handle": content.handle,
     "Title": content.title,
     "Body (HTML)": content.description,
@@ -43,17 +34,14 @@ export const exportToShopifyCSV = (content: GeneratedContent, input: ProductInpu
     "Variant Price": input.price,
     "Variant Requires Shipping": "true",
     "Variant Taxable": "true",
-    "Image Src": input.imageUrl,
+    "Image Src": input.imageUrl || '',
     "Image Position": "1",
     "SEO Title": content.title,
     "SEO Description": content.metaDescription,
   };
-
-  const headers = Object.keys(product);
-  const row = headers.map(header => escapeCsvField(product[header as keyof typeof product]));
-
-  const csvContent = [headers.join(','), row.join(',')].join('\n');
-  downloadFile(csvContent, 'shopify_import.csv', 'text/csv;charset=utf-8;');
+  
+  const csv = Papa.unparse([productForCsv]);
+  downloadFile(csv, 'shopify_import.csv', 'text/csv;charset=utf-8;');
 };
 
 
