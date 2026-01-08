@@ -47,10 +47,11 @@ const prompt = ai.definePrompt({
   name: 'generateSeoOptimizedProductContentPrompt',
   input: {schema: GenerateSeoOptimizedProductContentInputSchema},
   output: {schema: GenerateSeoOptimizedProductContentOutputSchema},
-  prompt: `Agis comme un expert copywriter e-commerce pour la plateforme {{{tone}}}.
+  prompt: `Tu es un expert en copywriting e-commerce et SEO, spécialisé dans l'optimisation pour Rank Math. Ta mission est de créer une fiche produit parfaite en français.
+
+    MOT-CLÉ PRINCIPAL : {{{name}}}
     
-    Détails du produit :
-    - Nom : {{{name}}}
+    INFORMATIONS PRODUIT :
     - Caractéristiques : {{{features}}}
     - Catégorie : {{{category}}}
     - Prix : {{{price}}}
@@ -59,10 +60,40 @@ const prompt = ai.definePrompt({
     - Image: {{media url=imageUrl}}
     {{/if}}
 
-    Génère le contenu marketing complet en français pour une fiche produit Shopify.
-    Assure-toi de remplir tous les champs demandés, en particulier les champs spécifiques à Shopify comme le vendeur (vendor) et les options de variantes.
-    Si le produit n'a pas de variantes évidentes, utilise "Title" et "Default Title" pour les options.
+    Génère le contenu marketing complet en respectant SCRUPULEUSEMENT toutes les consignes SEO ci-dessous pour obtenir un score Rank Math de 100/100.
     Le format de sortie doit être un JSON strict (pas de markdown).
+
+    CHECKLIST SEO RANK MATH :
+    1.  **Titre SEO (champ \`seoTitle\`)** :
+        -   Doit faire entre 50 et 60 caractères.
+        -   Doit commencer par le mot-clé principal : "{{{name}}}".
+        -   Doit inclure un "power word" (ex: Ultime, Incroyable, Essentiel, Garanti, Révolutionnaire).
+
+    2.  **Méta Description (champ \`metaDescription\`)** :
+        -   Doit faire entre 120 et 160 caractères.
+        -   Doit contenir le mot-clé principal : "{{{name}}}".
+
+    3.  **Slug d'URL (champ \`handle\`)** :
+        -   Doit être court et contenir le mot-clé principal.
+        -   Format : mots-separes-par-des-tirets.
+
+    4.  **Description Complète (champ \`description\`)** :
+        -   **Longueur** : Le texte doit faire AU MOINS 600 mots.
+        -   **Introduction** : La toute première phrase doit contenir le mot-clé principal "{{{name}}}".
+        -   **Structure** : Utilise des sous-titres H2 et H3. Au moins un H2 doit contenir le mot-clé principal.
+        -   **Densité du mot-clé** : Le mot-clé "{{{name}}}" doit apparaître naturellement environ 5-6 fois dans le texte.
+        -   **Liens** : Inclus des placeholders pour les liens : un lien interne (ex: \`<a href="[Lien vers une catégorie]">découvrez notre collection</a>\`) et un lien externe dofollow vers une ressource pertinente (ex: \`<a href="[Lien vers une source fiable]" target="_blank">source d'information</a>\`).
+        -   **Lisibilité** : Utilise des paragraphes courts (2-3 phrases maximum).
+        -   **Média** : Si une image est fournie, insère une balise \`<img src="{{{imageUrl}}}" alt="Image de {{{name}}}" style="width:100%; height:auto; border-radius:8px; margin:16px 0;">\` dans le contenu.
+    
+    5.  **Champs Shopify/E-commerce** :
+        -   **\`title\`** : Titre principal du produit, engageant pour le client.
+        -   **\`shortDescription\`** : Résumé percutant de 2 phrases.
+        -   **\`tags\`** : 3 à 5 tags pertinents.
+        -   **\`vendor\`** : Nom de la marque ou du fabricant.
+        -   **\`option1Name\` / \`option1Value\`** : Si pas de variante, utilise "Title" et "Default Title".
+
+    Remplis TOUS les champs du JSON demandé.
   `,
 });
 
