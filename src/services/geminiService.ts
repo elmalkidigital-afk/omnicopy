@@ -62,12 +62,21 @@ export const generateProductContent = async (input: ProductInput): Promise<Gener
     // Nettoyage robuste pour éviter les erreurs de parsing JSON
     const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
     
-    const parsed = JSON.parse(cleanText) as GeneratedContent;
-    
+    const parsedJson = JSON.parse(cleanText);
+
     // Vérification de sécurité basique
-    if (!parsed.title || !parsed.description) {
+    if (!parsedJson.title || !parsedJson.description) {
         throw new Error("Format de réponse invalide");
     }
+
+    const parsed: GeneratedContent = {
+        title: parsedJson.title,
+        slug: parsedJson.slug,
+        description: parsedJson.description,
+        shortDescription: parsedJson.shortDescription,
+        metaDescription: parsedJson.metaDescription,
+        tags: parsedJson.tags,
+      };
 
     return parsed;
     
