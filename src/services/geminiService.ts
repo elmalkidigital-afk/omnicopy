@@ -14,40 +14,44 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
 
 export const generateProductContent = async (input: ProductInput): Promise<GeneratedContent> => {
   
-  // 🚀 PROMPT SEO EXPERT AMÉLIORÉ 🚀
+  // 🚀 PROMPT SEO EXPERT AMÉLIORÉ V2 🚀
   const prompt = `
-    Tu es un expert SEO E-Commerce et Rédacteur Web de haut niveau (spécialisé WooCommerce et Shopify).
-    
-    TÂCHE : Générer une fiche produit optimisée pour le référencement naturel (SEO) et la conversion.
-    
+    Tu es un expert SEO E-Commerce et Rédacteur Web de niveau mondial, spécialiste de Rank Math, WooCommerce et Shopify.
+
+    TÂCHE : Générer une fiche produit optimisée pour un score SEO maximal sur Rank Math.
+
+    RÈGLE D'OR (NON-NÉGOCIABLE) :
+    Le **Mot-Clé Principal** est : "${input.name}".
+    Tu NE DOIS PAS le modifier, le reformuler ou y ajouter des mots. C'est la cible SEO absolue.
+
     DONNÉES D'ENTRÉE :
-    - Nom du produit : "${input.name}"
+    - Mot-Clé Principal : "${input.name}"
     - Caractéristiques : ${input.features}
     - Catégorie : ${input.category}
     - Prix : ${input.price}
     - Ton/Rédaction : ${input.tone}
 
-    INSTRUCTIONS SEO STRICTES :
-    1. **Title (Titre H1)** : Doit être accrocheur, contenir le mot-clé principal, faire max 60 caractères.
-    2. **Slug (URL)** : Génère un slug court, en minuscules, avec des tirets, basé sur le titre généré. Pas d'accents ni de caractères spéciaux. Ex: "montre-sport-pro".
-    3. **Description (HTML)** :
-       - Structure en HTML5 (<h2>, <ul>, <li>, <p>, <strong>).
-       - IMPORTANT : Le mot-clé principal (le nom du produit) doit apparaître dans les **100 premiers mots** du premier paragraphe.
-       - Utilise au moins un titre <h2> pour structurer (ex: "Pourquoi choisir ce ${input.category} ?", "Caractéristiques techniques").
-       - Mets les points clés en liste à puces (<ul><li>) pour la lisibilité.
-       - Adopte le ton demandé : ${input.tone}.
-    4. **Short Description** : Résumé percutant de 2 phrases maximum pour l'affichage liste.
-    5. **Meta Description** : Max 160 caractères. Doit inclure le mot-clé principal et un verbe d'action (ex: "Achetez", "Découvrez").
-    6. **Tags** : Génère 5 tags pertinents pour le référencement interne.
+    INSTRUCTIONS SEO STRICTES (basées sur le Mot-Clé Principal) :
+    1.  **Title (Titre SEO & H1)** : Doit commencer par le Mot-Clé Principal EXACT. Il doit être accrocheur, faire max 60 caractères.
+    2.  **Slug (URL)** : Génère un slug court à partir du Mot-Clé Principal EXACT. En minuscules, avec des tirets. Ex: si le mot-clé est "Montre Sport Pro", le slug est "montre-sport-pro".
+    3.  **Description (HTML)** :
+        -   STRUCTURE : Utilise des balises HTML5 (<h2>, <ul>, <li>, <p>, <strong>).
+        -   MOT-CLÉ EN DÉBUT DE CONTENU : Le Mot-Clé Principal EXACT doit apparaître dans les **100 premiers mots** du premier paragraphe.
+        -   SOUS-TITRES (H2) : Utilise au moins un titre <h2> contenant le Mot-Clé Principal.
+        -   LISIBILITÉ : Structure le contenu avec des listes à puces (<ul><li>) et des paragraphes courts.
+        -   TON : Adopte le ton demandé : ${input.tone}.
+    4.  **Short Description** : Résumé percutant de 1 à 2 phrases.
+    5.  **Meta Description** : Max 160 caractères. Doit contenir le Mot-Clé Principal EXACT et un verbe d'action fort (ex: "Achetez", "Découvrez", "Profitez").
+    6.  **Tags** : Génère 5 tags pertinents incluant des variations du Mot-Clé Principal.
 
     FORMAT DE SORTIE ATTENDU (JSON STRICT, sans markdown \`\`\`) :
     {
-      "title": "Titre optimisé",
-      "slug": "slug-du-produit",
-      "description": "<p>Paragraphe d'introduction avec mot clé...</p><h2>Sous-titre H2</h2><ul><li>Point 1</li></ul>",
-      "shortDescription": "Résumé court...",
-      "metaDescription": "Description pour Google avec CTA...",
-      "tags": ["tag1", "tag2", "tag3"]
+      "title": "Titre optimisé commençant par le mot-clé",
+      "slug": "slug-base-sur-le-mot-cle",
+      "description": "<p>Paragraphe d'introduction avec le <strong>Mot-Clé Principal EXACT</strong>...</p><h2>Pourquoi choisir notre <strong>Mot-Clé Principal EXACT</strong> ?</h2><ul><li>Point 1</li><li>Point 2</li></ul>",
+      "shortDescription": "Résumé court et percutant.",
+      "metaDescription": "Méta-description pour Google avec le Mot-Clé Principal EXACT et un CTA.",
+      "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"]
     }
   `;
 
