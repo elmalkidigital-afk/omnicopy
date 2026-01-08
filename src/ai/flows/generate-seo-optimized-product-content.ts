@@ -8,7 +8,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import { ProductTone, tones } from '@/types';
+import { ProductTone } from '@/types';
 import {z} from 'genkit';
 
 
@@ -24,12 +24,12 @@ const GenerateSeoOptimizedProductContentInputSchema = z.object({
 export type GenerateSeoOptimizedProductContentInput = z.infer<typeof GenerateSeoOptimizedProductContentInputSchema>;
 
 const GeneratedContentSchema = z.object({
-  title: z.string().describe('SEO-optimized product title (max 60 chars).'),
-  description: z.string().describe('Complete HTML description (with <p>, <ul>, <strong> tags).'),
-  shortDescription: z.string().describe('Concise and impactful summary (2 sentences).'),
-  metaDescription: z.string().describe('SEO meta description (max 160 chars).'),
-  tags: z.array(z.string()).describe('Array of relevant tags.'),
-  handle: z.string().optional().describe('Product slug for URL (Shopify).'),
+  title: z.string().describe('Titre SEO optimisé (max 60 car)'),
+  description: z.string().describe('Description HTML complète (<p>, <ul>, <strong>)'),
+  shortDescription: z.string().describe('Résumé percutant (2 phrases)'),
+  metaDescription: z.string().describe('Meta description SEO (max 160 car)'),
+  tags: z.array(z.string()).describe('Array de 3 tags pertinents.'),
+  handle: z.string().optional().describe('slug-du-produit-pour-url'),
 });
 
 export type GeneratedContent = z.infer<typeof GeneratedContentSchema>;
@@ -42,19 +42,19 @@ const prompt = ai.definePrompt({
   name: 'generateSeoOptimizedProductContentPrompt',
   input: {schema: GenerateSeoOptimizedProductContentInputSchema},
   output: {schema: GenerateSeoOptimizedProductContentOutputSchema},
-  prompt: `Agissez en tant qu'expert rédacteur e-commerce.
+  prompt: `Agis comme un expert copywriter e-commerce pour la plateforme {{{tone}}}.
+    
+    Détails du produit :
+    - Nom : {{{name}}}
+    - Caractéristiques : {{{features}}}
+    - Catégorie : {{{category}}}
+    - Prix : {{{price}}}
+    - Ton souhaité : {{{tone}}}
+    {{#if imageUrl}}
+    - Image: {{media url=imageUrl}}
+    {{/if}}
 
-  Détails du produit:
-  - Nom: {{{name}}}
-  - Caractéristiques: {{{features}}}
-  - Catégorie: {{{category}}}
-  - Prix: {{{price}}}
-  - Ton demandé: {{{tone}}}
-  {{#if imageUrl}}
-  - Image: {{media url=imageUrl}}
-  {{/if}}
-
-  Générez le contenu marketing en français, au format JSON strict (pas de markdown) en suivant cette structure.
+    Génère le contenu marketing en français, au format JSON strict (pas de markdown) en suivant la structure demandée.
   `,
 });
 
