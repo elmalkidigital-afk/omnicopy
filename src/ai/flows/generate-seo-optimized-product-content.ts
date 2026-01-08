@@ -24,13 +24,18 @@ const GenerateSeoOptimizedProductContentInputSchema = z.object({
 export type GenerateSeoOptimizedProductContentInput = z.infer<typeof GenerateSeoOptimizedProductContentInputSchema>;
 
 const GeneratedContentSchema = z.object({
-  title: z.string().describe('Titre SEO optimisé (max 60 car)'),
-  description: z.string().describe('Description HTML complète (<p>, <ul>, <strong>)'),
-  shortDescription: z.string().describe('Résumé percutant (2 phrases)'),
-  metaDescription: z.string().describe('Meta description SEO (max 160 car)'),
-  tags: z.array(z.string()).describe('Array de 3 tags pertinents.'),
-  handle: z.string().optional().describe('slug-du-produit-pour-url'),
+  title: z.string().describe('Titre accrocheur pour le produit.'),
+  seoTitle: z.string().describe('Titre optimisé pour le SEO (max 60 caractères).'),
+  description: z.string().describe('Description HTML complète et engageante (<p>, <ul>, <strong>).'),
+  shortDescription: z.string().describe('Résumé percutant (2-3 phrases) pour les listes de produits.'),
+  metaDescription: z.string().describe('Meta description SEO (max 160 caractères) pour les moteurs de recherche.'),
+  tags: z.array(z.string()).describe('Array de 3 à 5 tags pertinents pour la recherche et le filtrage.'),
+  handle: z.string().optional().describe('Le slug optimisé pour l\'URL (par exemple: slug-du-produit-pour-url).'),
+  vendor: z.string().describe('Le nom du fabricant ou de la marque du produit.'),
+  option1Name: z.string().describe('Nom de la première option de variante (ex: Couleur, Taille). Mettre "Title" si pas de variante.'),
+  option1Value: z.string().describe('Valeur de cette première option (ex: Bleu, M). Mettre "Default Title" si pas de variante.')
 });
+
 
 export type GeneratedContent = z.infer<typeof GeneratedContentSchema>;
 
@@ -54,7 +59,10 @@ const prompt = ai.definePrompt({
     - Image: {{media url=imageUrl}}
     {{/if}}
 
-    Génère le contenu marketing en français, au format JSON strict (pas de markdown) en suivant la structure demandée.
+    Génère le contenu marketing complet en français pour une fiche produit Shopify.
+    Assure-toi de remplir tous les champs demandés, en particulier les champs spécifiques à Shopify comme le vendeur (vendor) et les options de variantes.
+    Si le produit n'a pas de variantes évidentes, utilise "Title" et "Default Title" pour les options.
+    Le format de sortie doit être un JSON strict (pas de markdown).
   `,
 });
 
