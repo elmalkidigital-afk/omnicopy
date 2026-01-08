@@ -4,13 +4,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, Wand2 } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Logo } from './icons';
 
 const navLinks = [
-  { href: '/', label: 'Studio' },
-  { href: '/dashboard', label: 'Tableau de bord' },
+  { href: '/dashboard', label: 'Dashboard' },
   { href: '/pricing', label: 'Tarifs' },
 ];
 
@@ -18,12 +16,12 @@ export default function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
+    <header className="sticky top-0 z-50 w-full border-b bg-white">
+      <div className="container flex h-16 items-center max-w-6xl">
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Wand2 className="h-6 w-6 text-primary" />
-            <span className="hidden font-bold sm:inline-block">OmniCopy AI</span>
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">O</div>
+            <h1 className="text-xl font-bold tracking-tight text-gray-900">OmniCopy <span className="text-primary">AI</span></h1>
           </Link>
           <nav className="flex items-center space-x-6 text-sm font-medium">
             {navLinks.map((link) => (
@@ -31,10 +29,8 @@ export default function Header() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  'transition-colors hover:text-foreground/80',
-                  pathname === link.href
-                    ? 'text-foreground'
-                    : 'text-foreground/60'
+                  'transition-colors text-gray-600 hover:text-primary',
+                  pathname === link.href && 'text-primary'
                 )}
               >
                 {link.label}
@@ -45,7 +41,7 @@ export default function Header() {
 
         {/* Mobile Nav */}
         <div className="md:hidden">
-          <Sheet>
+           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
                 <Menu className="h-5 w-5" />
@@ -55,8 +51,8 @@ export default function Header() {
             <SheetContent side="left">
               <div className="flex flex-col space-y-4">
               <Link href="/" className="mr-6 flex items-center space-x-2">
-                <Wand2 className="h-6 w-6 text-primary" />
-                <span className="font-bold">OmniCopy AI</span>
+                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">O</div>
+                 <h1 className="text-xl font-bold tracking-tight text-gray-900">OmniCopy <span className="text-primary">AI</span></h1>
               </Link>
                 <nav className="flex flex-col space-y-2">
                   {navLinks.map((link) => (
@@ -80,7 +76,7 @@ export default function Header() {
         </div>
 
         <div className="flex flex-1 items-center justify-end space-x-4">
-          <Button>Se Connecter</Button>
+          <Button variant="ghost">Se Connecter</Button>
         </div>
       </div>
     </header>
