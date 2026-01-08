@@ -1,0 +1,20 @@
+omnicopy-ai/
+├── components/                 # Composants React
+│   ├── App.tsx                # Point d'entrée
+│   ├── Dashboard.tsx          # Historique des générations
+│   ├── ProductStudio.tsx      # Studio de création (Formulaire)
+│   ├── ExportModal.tsx        # ⭐ Modal de choix de format (CSV/JSON)
+│   ├── Layout.tsx             # Navigation
+│   └── PricingPage.tsx        # Tarifs
+├── services/                  # Services métier
+│   ├── geminiService.ts       # Prompting dynamique IA
+│   ├── creditService.ts       # Gestion des crédits
+│   └── exportService.ts       # ⭐ Formattage CSV (Shopify) / JSON (Woo)
+├── api/                       # Backend (Vercel)
+│   ├── create-checkout-session.ts
+│   └── webhooks/stripe.ts
+├── types.ts                   # Types TS (Produit, Platform)
+├── utils/                     # Helpers
+│   └── generators.ts          # Templates de prompts IA
+├── firestore.rules            # Sécurité DB
+└── .env                       # Configuration
