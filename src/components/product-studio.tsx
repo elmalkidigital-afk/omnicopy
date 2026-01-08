@@ -245,24 +245,22 @@ export default function ProductStudio() {
                   <FormItem>
                     <FormLabel>Image du produit</FormLabel>
                     <FormControl>
-                      <>
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          ref={fileInputRef}
-                          onChange={handleImageChange}
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => fileInputRef.current?.click()}
-                        >
-                          <Upload className="mr-2 h-4 w-4" />
-                          Télécharger une image
-                        </Button>
-                      </>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        ref={fileInputRef}
+                        onChange={handleImageChange}
+                      />
                     </FormControl>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <Upload className="mr-2 h-4 w-4" />
+                      Télécharger une image
+                    </Button>
                     {imagePreview && (
                       <div className="mt-4 relative w-full h-48 rounded-md overflow-hidden border">
                          <Image src={imagePreview} alt="Aperçu du produit" fill style={{objectFit: 'cover'}} />
