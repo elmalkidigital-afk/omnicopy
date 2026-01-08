@@ -45,22 +45,19 @@ export const exportToShopifyCSV = (content: GeneratedContent, input: ProductInpu
 };
 
 
-export const exportToWooCommerceJSON = (content: GeneratedContent, input: ProductInput) => {
-  const wooData = [{
-    name: content.title,
-    type: "simple",
-    regular_price: input.price.toString(),
-    description: content.description,
-    short_description: content.shortDescription,
-    categories: [{ name: input.category }],
-    images: input.imageUrl ? [{ src: input.imageUrl }] : [],
-    tags: content.tags.map(tag => ({ name: tag })),
-    meta_data: [
-      { key: "_yoast_wpseo_metadesc", value: content.metaDescription },
-      { key: "_omnicopy_generated", value: "true" }
-    ]
-  }];
+export const exportToWooCommerceCSV = (content: GeneratedContent, input: ProductInput) => {
+  const productForCsv = {
+    "Type": "simple",
+    "Name": content.title,
+    "Description": content.description,
+    "Short description": content.shortDescription,
+    "Categories": input.category,
+    "Tags": content.tags.join(', '),
+    "Regular price": input.price,
+    "Images": input.imageUrl || '',
+    "Meta: _yoast_wpseo_metadesc": content.metaDescription,
+  };
 
-  const dataStr = JSON.stringify(wooData, null, 2);
-  downloadFile(dataStr, 'woo_import.json', 'application/json');
+  const csv = Papa.unparse([productForCsv]);
+  downloadFile(csv, 'woocommerce_import.csv', 'text/csv;charset=utf-8;');
 };

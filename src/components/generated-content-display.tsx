@@ -4,7 +4,7 @@ import { CheckCircle, FileJson, FileSpreadsheet, Copy } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
-import { exportToShopifyCSV, exportToWooCommerceJSON } from '@/services/exportService';
+import { exportToShopifyCSV, exportToWooCommerceCSV } from '@/services/exportService';
 import type { GeneratedContent, ProductInput } from '@/types';
 import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
@@ -89,11 +89,11 @@ export default function GeneratedContentDisplay({ content, input }: GeneratedCon
             Shopify (CSV)
           </Button>
           <Button 
-            onClick={() => exportToWooCommerceJSON(content, input)}
+            onClick={() => exportToWooCommerceCSV(content, input)}
             className="bg-purple-600 hover:bg-purple-700 text-white py-6"
             >
-            <FileJson className="mr-2 h-5 w-5" />
-            WooCommerce (JSON)
+            <FileSpreadsheet className="mr-2 h-5 w-5" />
+            WooCommerce (CSV)
           </Button>
         </div>
       </CardFooter>
